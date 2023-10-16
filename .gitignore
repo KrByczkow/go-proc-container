@@ -1,0 +1,4 @@
+.idea
+build
+rootfs
+alpine-minirootfs-3.18.0-x86_64.tar.gz

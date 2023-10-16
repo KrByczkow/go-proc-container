@@ -1,0 +1,20 @@
+Topics to research:
+- cgroups
+- syscalls
+- go sys package
+- os/exec
+
+Things to implement / fix:
+[X] Run a process in a self-made container
+[-] Network Isolation
+[X] Process Namespace Isolation
+[X] User Namespace Isolation
+[X] Limit CPU and Memory
+[X] Rework on cgroups, make cgroups v2 accessible
+
+Optional things to implement:
+[ ] VFS (Filesystem Root) isolation.
+[ ] Busybox Tools
+
+Later on, on free time:
+[ ] Possibility of extraction an image & linking necessary files
