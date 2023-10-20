@@ -23,15 +23,16 @@ func InitContainer(hostname string, exe string, cmd []string) {
 	RunProcess(exe, cmd)
 }
 
-func RestartSelf(cmd []string) {
+func RestartSelf(cmd []string) (*exec.Cmd, int) {
 	comm := exec.Command("/proc/self/exe", cmd...)
 	comm.Stdin = os.Stdin
 	comm.Stdout = os.Stdout
 	comm.Stderr = os.Stderr
 	comm.SysProcAttr = &syscall.SysProcAttr{
 		Cloneflags: syscall.CLONE_NEWUTS |
-			syscall.CLONE_NEWPID |
 			syscall.CLONE_NEWNS |
+			syscall.CLONE_NEWIPC |
+			syscall.CLONE_NEWPID |
 			syscall.CLONE_NEWNET |
 			syscall.CLONE_NEWUSER,
 		Unshareflags: syscall.CLONE_NEWNS,
@@ -51,12 +52,14 @@ func RestartSelf(cmd []string) {
 		},
 	}
 
-	err := comm.Run()
+	err := comm.Start()
 	if err != nil {
 		if !strings.Contains(err.Error(), "exit status") {
 			utils.PanicOnError(err)
 		}
 	}
+
+	return comm, comm.Process.Pid
 }
 
 func RunProcess(exe string, cmd []string) {
