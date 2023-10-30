@@ -16,7 +16,7 @@ type NetworkConfig struct {
 	VethNamePrefix string
 }
 
-type Configuration interface {
+type Config interface {
 	Apply(netConfig NetworkConfig, pid int) error
 }
 
@@ -39,37 +39,37 @@ type VethCreator interface {
 	MoveNetToNS(containerVeth *net.Interface, pid int) error
 }
 
-type NetSet struct {
-	HostConfiguration      Configuration
-	ContainerConfiguration Configuration
+type NetConfig struct {
+	HostConfig      Config
+	ContainerConfig Config
 }
 
-func New(hostConfiguration, containerConfiguration Configuration) *NetSet {
-	return &NetSet{
-		HostConfiguration:      hostConfiguration,
-		ContainerConfiguration: containerConfiguration,
+func New(hostConfiguration, containerConfiguration Config) *NetConfig {
+	return &NetConfig{
+		HostConfig:      hostConfiguration,
+		ContainerConfig: containerConfiguration,
 	}
 }
 
-func NewHostConfiguration(bridgeCreator BridgeCreator, vethCreator VethCreator) *Host {
+func NewHostConfig(bridgeCreator BridgeCreator, vethCreator VethCreator) *Host {
 	return &Host{
 		BridgeCreator: bridgeCreator,
 		VethCreator:   vethCreator,
 	}
 }
 
-func NewContainerConfiguration(NsExecutor *netns.Execer) *Container {
+func NewContainerConfig(NsExecutor *netns.Execer) *Container {
 	return &Container{
 		NsExecutor: NsExecutor,
 	}
 }
 
-func (n *NetSet) ConfigureHost(netConfig NetworkConfig, pid int) error {
-	return n.HostConfiguration.Apply(netConfig, pid)
+func (conf *NetConfig) ConfigureHost(netConfig NetworkConfig, pid int) error {
+	return conf.HostConfig.Apply(netConfig, pid)
 }
 
-func (n *NetSet) ConfigureContainer(netConfig NetworkConfig, pid int) error {
-	return n.ContainerConfiguration.Apply(netConfig, pid)
+func (conf *NetConfig) ConfigureContainer(netConfig NetworkConfig, pid int) error {
+	return conf.ContainerConfig.Apply(netConfig, pid)
 }
 
 func (h *Host) Apply(netConfig NetworkConfig, pid int) error {

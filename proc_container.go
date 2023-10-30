@@ -25,8 +25,8 @@ func initNetwork(pid int, namePrefix, bridgeAddress, containerAddress string) er
 	cVeth := net_tools.NewVeth()
 	nsExec := &netns.Execer{}
 
-	hostConfig := net_tools.NewHostConfiguration(cBridge, cVeth)
-	containerConfig := net_tools.NewContainerConfiguration(nsExec)
+	hostConfig := net_tools.NewHostConfig(cBridge, cVeth)
+	containerConfig := net_tools.NewContainerConfig(nsExec)
 	netSet := net_tools.New(hostConfig, containerConfig)
 
 	bridgeIP, bridgeSubnet, err := net.ParseCIDR(bridgeAddress)
@@ -36,7 +36,7 @@ func initNetwork(pid int, namePrefix, bridgeAddress, containerAddress string) er
 	PanicOnError(err)
 
 	netConfig := net_tools.NetworkConfig{
-		BridgeName:     "brdg0",
+		BridgeName:     "brd0",
 		BridgeIP:       bridgeIP,
 		ContainerIP:    containerIP,
 		Subnet:         bridgeSubnet,

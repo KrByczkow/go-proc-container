@@ -3,7 +3,6 @@ package cgroups
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -125,38 +124,4 @@ func CGInit(cgName string) error {
 	}
 
 	return os.MkdirAll(filepath.Join(path, cgName, "tasks"), 0744)
-}
-
-func CGVerifyProcess(paths []string) (bool, error) {
-	file, err := os.Open(fmt.Sprintf("/proc/%d/cgroup", os.Getpid()))
-	if err != nil {
-		return false, err
-	}
-
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
-	if scanner == nil {
-		return false, errors.New("")
-	}
-
-	foundPaths := 0
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-
-		if len(line) == 0 {
-			continue
-		}
-
-		opts := strings.SplitN(line, "::", 2)
-
-		for _, path := range paths {
-			if path == opts[1] {
-				foundPaths++
-			}
-		}
-	}
-
-	return foundPaths == len(paths), nil
 }
